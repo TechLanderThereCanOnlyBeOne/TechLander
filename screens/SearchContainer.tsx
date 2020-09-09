@@ -5,20 +5,41 @@ import {
   TouchableOpacity,
   TextInput,
   StyleSheet,
+  GestureResponderEvent,
 } from "react-native";
 import { Icon } from "native-base";
 
-const SearchContainer = ({ history }) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const handleEmail = (text: string) => {
-    setEmail(text);
+type SearchContainerProps = {
+  history: []
+  onPress: (event: GestureResponderEvent) => void
+};
+
+
+
+type State = {
+  tech: [],
+  currentTech: string
+};
+
+const SearchContainer = (props: SearchContainerProps) => {
+
+  const { history } = props;
+  
+  const [tech, addTech] = useState([]);
+  const [currentTech, updateCurrentTech] = useState("");
+
+  const handleTechStack = (currentTech: string) => {
+    let initial: any = [...tech, currentTech];
+    console.log('initial', initial);
+    console.log('currenttech', currentTech);
+    addTech(currentTech => initial);
+    console.log('tech', tech);
   };
-  const handlePassword = (text: string) => {
-    setPassword(text);
-  };
-  const login = (email: string, pass: string) => {
-    alert("email: " + email + " password: " + pass);
+
+  const handleChange = (text: any) => {
+    // let initial: any = [...tech, text];
+    
+    updateCurrentTech(text);
   };
 
   return (
@@ -30,12 +51,13 @@ const SearchContainer = ({ history }) => {
           placeholder="Enter a Tech Stack"
           placeholderTextColor="#9a73ef"
           autoCapitalize="none"
-          onChangeText={handleEmail}
+          value={currentTech}
+          onChangeText={handleChange}
         />
 
         <TouchableOpacity
           style={styles.addButton}
-          onPress={() => history.push("/signup")}
+          onPress={handleTechStack}
         >
           {/* <Text style={styles.addText}>+</Text> */}
           <Icon name="add" />
@@ -44,9 +66,10 @@ const SearchContainer = ({ history }) => {
         <TouchableOpacity
           style={styles.locationButton}
           onPress={() => history.push("/jobpage")} //insert if conditional functionality later to see if credentials correct then route to jobs else alert message
-        >
+          >
           <Text style={styles.locationText}> Location </Text>
         </TouchableOpacity>
+          <Text style={styles.container}>{currentTech}</Text>
       </View>
     </View>
   );
