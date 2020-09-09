@@ -2,9 +2,7 @@ import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Router, Switch, Route } from "react-router-native";
-
 import { Right, Icon, Left, Header, Container, Body, Title } from "native-base";
-import createHistory from "history/createMemoryHistory";
 
 import useCachedResources from "./hooks/useCachedResources";
 import Login from "./screens/Login";
@@ -12,11 +10,11 @@ import SignUp from "./screens/SignUp";
 import JobPage from "./screens/JobPage";
 import SearchContainer from "./screens/SearchContainer";
 
+const createHistory = require('history').createMemoryHistory;
 const history = createHistory();
 
 export default function App() {
   const isLoadingComplete = useCachedResources();
-
   if (!isLoadingComplete) {
     return null;
   } else {
