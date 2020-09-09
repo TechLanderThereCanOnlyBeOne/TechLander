@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { Icon } from "native-base";
 
-const SearchContainer = ({ history }) => {
+export default function SearchContainer() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const handleEmail = (text: string) => {
@@ -22,7 +22,7 @@ const SearchContainer = ({ history }) => {
   };
 
   return (
-    <View style={styled.container}>
+    <View style={styles.container}>
       <View style={styles.container}>
         <TextInput
           style={styles.input}
@@ -41,18 +41,38 @@ const SearchContainer = ({ history }) => {
           <Icon name="add" />
         </TouchableOpacity>
 
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={styles.locationButton}
           onPress={() => history.push("/jobpage")} //insert if conditional functionality later to see if credentials correct then route to jobs else alert message
         >
           <Text style={styles.locationText}> Location </Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     </View>
+
+<View style={styles.container}>
+<View style={styles.container}>
+  <TextInput
+    placeholder="Enter tech"
+    style={styles.input}
+    onChangeText={handleTech}
+    value={enteredTech}
+    underlineColorAndroid="transparent"
+  />
+  <Button title="ADD" onPress={addGoalHandler} />
+</View>
+<FlatList
+  data={courseGoals}
+  renderItem={(itemData) => (
+    <View style={styles.listItem}>
+      <Text>{itemData.item}</Text>
+    </View>
+  )}
+/>
+</View>
   );
 };
 
-export default SearchContainer;
 
 const styles = StyleSheet.create({
   container: {
