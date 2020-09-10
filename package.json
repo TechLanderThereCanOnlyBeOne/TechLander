@@ -19,6 +19,7 @@
 		"@react-navigation/stack": "^5.6.2",
 		"concurrently": "^5.3.0",
 		"cookie-parser": "^1.4.5",
+		"dotenv": "^8.2.0",
 		"expo": "~38.0.8",
 		"expo-asset": "~8.1.7",
 		"expo-constants": "~9.1.1",

@@ -54,7 +54,7 @@ const SignUp = ({ history }) => {
 				<TouchableOpacity
 					style={styles.submitButton}
 					onPress={() => {
-						fetch("http://192.168.1.5:19000/signUp", {
+						fetch("http://(Put in your own private IP here):19000/signUp", {
 							method: "POST",
 							headers: { "Content-Type": "application/json" },
 							body: JSON.stringify(signUpBody),

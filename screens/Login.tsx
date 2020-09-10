@@ -6,7 +6,6 @@ import {
 	TextInput,
 	StyleSheet,
 } from "react-native";
-// import RNFetchBlob from "rn-fetch-blob";
 
 const Login = ({ history }) => {
 	const [email, setEmail] = useState("");
@@ -47,7 +46,7 @@ const Login = ({ history }) => {
 					style={styles.submitButton}
 					onPress={() =>
 						// console.log("hy")
-						fetch("http://192.168.1.5:19000/login", {
+						fetch("http://(Put in your own private IP here):19000/login", {
 							method: "POST",
 							headers: { "Content-Type": "application/json" },
 							body: JSON.stringify(loginBody),
