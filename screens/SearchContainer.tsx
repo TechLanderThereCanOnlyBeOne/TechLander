@@ -50,11 +50,15 @@ const SearchContainer = (props: SearchContainerProps) => {
     updateCurrentTech(text);
   };
 
-  const handleLocationInput = (text: any) => {
+  const handleLocationInput = (text: string) => {
     setLocation(text);
   };
+
   const handleLocationSubmit = () => {
-    console.log(location);
+    let modText = location.split(' ').join('%20');
+    modText = modText.split(',').join('%2C');
+    console.log(modText);
+    setLocation(modText);
     // send location as query
   };
 
@@ -89,14 +93,18 @@ const SearchContainer = (props: SearchContainerProps) => {
   // fetch job listings with adzuna API
   // need to add APP_ID & APP_KEY to .env
   const fetchListing = () => {
-    if (addQuery.length > 0) {
-      let queryString = `http://api.adzuna.com/v1/api/jobs/us/search/1?app_id=${APP_ID}&app_key=${APP_KEY}&results_per_page=20&what=${addQuery}&where=los%20angeles%2C%20california&distance=30`
+    if (addQuery.length > 0 && location.length > 0) {
+      let queryString = `http://api.adzuna.com/v1/api/jobs/us/search/1?app_id=${APP_ID}&app_key=${APP_KEY}&results_per_page=20&what=${addQuery}&where=${location}&distance=30`
+      console.log('queryString', queryString);
       fetch(queryString)
         .then((res: any) => res.json())
-        .then((data: string) => {
-        console.log('jobs: ',data)
+        .then((data: any) => {
+        console.log('jobs: ',data);
+        let jobResults: any = [...data.results];
+        console.log('results');
+        setQueriedJobListings(jobResults);
       })
-        .catch((error: any) => console.log('error', error.text()));
+        .catch((error: string) => console.log('error in fetch', error));
 
     }
   }
