@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+// import JobListing from '../components/JobListing';
 import {
   View,
   Text,
@@ -10,6 +11,7 @@ import {
 } from 'react-native';
 import { Icon, Row } from 'native-base';
 import { initialWindowMetrics } from 'react-native-safe-area-context';
+import uuidv4 from 'uuid/v4';
 
 type SearchContainerProps = {
   history: [];
@@ -19,6 +21,10 @@ type SearchContainerProps = {
 type state = {
   tech: [];
   currentTech: string;
+  location: string;
+  addQuery: string;
+  subtractQuery: string;
+  queriedListings: [{}];
 };
 
 const SearchContainer = (props: SearchContainerProps) => {
@@ -26,29 +32,70 @@ const SearchContainer = (props: SearchContainerProps) => {
 
   const [currentTech, updateCurrentTech] = useState('');
   const [tech, addTech] = useState([]);
+  const [location, setLocation] = useState('');
+  const [addQuery, setAddQuery] = useState('');
+  const [subtractQuery, setSubtractQuery] = useState('');
+  
+  // queried listings is returned as as result array
+  const [queriedListings, setQueriedJobListings] = useState([]);
 
-  const handleChange = (text: any) => {
+  const handleTechChange = (text: any) => {
     updateCurrentTech(text);
   };
 
-  const handleTechStack = () => {
-    let initial: any = [...tech, currentTech];
-    addTech(initial);
-    updateCurrentTech('');
+  const handleLocationInput = (text: any) => {
+    setLocation(text);
   };
+  const handleLocationSubmit = () => {
+    console.log(location);
+    // send location as query
+  };
+
+  const handleTechStack = () => {
+    if (currentTech.length > 0) {
+      let initial: any = [...tech, currentTech];
+      addTech(initial);
+      updateCurrentTech('');
+    }
+    // add the most recent item into search query
+    let newTechStack = tech.concat(currentTech);
+    const addQueryString = newTechStack.join(' ');
+    // optional set state
+    setAddQuery(addQueryString);
+    // send query
+  };
+
   const handleDeleteTech = (e: any) => {
-    const idx = e.target.key;
-    console.log(idx);
+    // console.log(e);
+    const idx = tech.indexOf(e);
     if (idx > -1) {
       tech.splice(idx, 1);
     }
+    console.log(tech);
+    handleTechStack();
+    const subtractQueryString = tech.join(' ');
+    // optional set state
+    setSubtractQuery(subtractQueryString);
+    // send query
   };
 
   return (
     <View style={styled.container}>
       <SafeAreaView>
-        <View style={styles.title}>
-          <Text>Add Your Tech</Text>
+        <View style={styles.container}>
+          <TextInput
+            style={styles.input}
+            underlineColorAndroid="transparent"
+            placeholder="Enter Your Location"
+            placeholderTextColor="#9a73ef"
+            autoCapitalize="none"
+            value={location}
+            onChangeText={handleLocationInput}
+          />
+
+          <TouchableOpacity style={styles.addButton} onPress={handleLocationSubmit}>
+            <Icon name="add" />
+          </TouchableOpacity>
         </View>
         <View style={styles.container}>
           <TextInput
@@ -58,7 +105,7 @@ const SearchContainer = (props: SearchContainerProps) => {
             placeholderTextColor="#9a73ef"
             autoCapitalize="none"
             value={currentTech}
-            onChangeText={handleChange}
+            onChangeText={handleTechChange}
           />
 
           <TouchableOpacity style={styles.addButton} onPress={handleTechStack}>
@@ -67,17 +114,17 @@ const SearchContainer = (props: SearchContainerProps) => {
         </View>
         <View style={styles.listContainer}>
           {tech.map((techItem) => (
-            <View style={styles.techListItem}>
-              <Text style={{ color: 'white' }}> {techItem} </Text>
-              <Text
-                key={tech.indexOf(techItem)}
-                style={styles.deleteTechItem}
-                onPress={handleDeleteTech}
-              >
-                x
+            <View style={styles.techListItem} key={uuidv4()}>
+              <Text style={{ color: 'white' }} onPress={() => handleDeleteTech(techItem)}>
+                {techItem} x
               </Text>
             </View>
           ))}
+        </View>
+        <Text>Search Results</Text>
+        <View style={styles.resultsContainer}>
+          {/* still need to add props to component */}
+        {queriedListings.map((jobListing) => (<JobListing />))}
         </View>
       </SafeAreaView>
     </View>
@@ -137,6 +184,11 @@ const styles = StyleSheet.create({
     flexGrow: 0,
     marginRight: 30,
     marginLeft: 30,
+  },
+  resultsContainer: {
+    flexDirection: 'column',
+    flexGrow: 1,
+    marginBottom: 10,
   },
   techListItem: {
     backgroundColor: '#7a42f4',
