@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 // import JobListing from '../components/JobListing';
 import {
   View,
@@ -40,6 +40,12 @@ const SearchContainer = (props: SearchContainerProps) => {
   // queried listings is returned as as result array
   const [queriedListings, setQueriedJobListings] = useState([]);
 
+  // fetch job listings when queries are added
+  useEffect(() => {
+    fetchListing()
+    console.log('useeffect fired')
+  }, [addQuery])
+
   const handleTechChange = (text: any) => {
     updateCurrentTech(text);
   };
@@ -60,7 +66,7 @@ const SearchContainer = (props: SearchContainerProps) => {
     }
     // add the most recent item into search query
     let newTechStack = tech.concat(currentTech);
-    const addQueryString = newTechStack.join(' ');
+    const addQueryString = newTechStack.join('%20');
     // optional set state
     setAddQuery(addQueryString);
     // send query
@@ -80,7 +86,21 @@ const SearchContainer = (props: SearchContainerProps) => {
     // send query
   };
 
+  // fetch job listings with adzuna API
+  // need to add APP_ID & APP_KEY to .env
+  const fetchListing = () => {
+    if (addQuery.length > 0) {
+      let queryString = `http://api.adzuna.com/v1/api/jobs/us/search/1?app_id=${APP_ID}&app_key=${APP_KEY}&results_per_page=20&what=${addQuery}&where=los%20angeles%2C%20california&distance=30`
+      fetch(queryString)
+        .then((res: any) => res.json())
+        .then((data: string) => {
+        console.log('jobs: ',data)
+      })
+        .catch((error: any) => console.log('error', error.text()));
 
+    }
+  }
+  
   return (
     <View style={styled.container}>
       <SafeAreaView>
