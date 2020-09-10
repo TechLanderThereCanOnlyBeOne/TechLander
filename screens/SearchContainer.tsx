@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import uuid from 'uuid4';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -10,7 +9,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 import { Icon, Row } from 'native-base';
-require('dotenv').config();
+import { APP_ID, APP_KEY } from '@env';
 
 
 type SearchContainerProps = {
@@ -35,9 +34,11 @@ const SearchContainer = (props: SearchContainerProps) => {
   };
 
   const fetchListing = () => {
-    console.log('listing')
-    console.log(process.env.APP_ID);
-    // fetch()
+    let queryString = `http://api.adzuna.com/v1/api/jobs/us/search/1?app_id=${APP_ID}&app_key=${APP_KEY}&results_per_page=20&what=react&where=los%20angeles%2C%20california&distance=30`
+    fetch(queryString)
+    .then((res: any) => res.text())
+    .then((data: string) => console.log(data))
+    .catch((error: string) => console.log('error', error));
   }
 
   const handleTechStack = () => {
