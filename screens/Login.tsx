@@ -20,7 +20,7 @@ const Login = ({ history }) => {
 	const login = (email: string, pass: string) => {
 		alert("email: " + email + " password: " + pass);
 	};
-
+	const loginBody = { username: email, password };
 	return (
 		<View style={styled.container}>
 			<Text style={styled.title}>TechLander</Text>
@@ -47,8 +47,12 @@ const Login = ({ history }) => {
 					style={styles.submitButton}
 					onPress={() =>
 						// console.log("hy")
-						fetch("http://192.168.1.5:19000/logy")
-							.then((response) => response.json())
+						fetch("http://192.168.1.5:19000/login", {
+							method: "POST",
+							headers: { "Content-Type": "application/json" },
+							body: JSON.stringify(loginBody),
+						})
+							.then((response) => response.text())
 							.then((data) => console.log(data))
 							.catch((err) => console.log(err))
 					} //insert if conditional functionality later to see if credentials correct then route to jobs else alert message
