@@ -1,7 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { Icon, Row } from 'native-base';
-import HTML from 'react-native-render-html';
 
 type JobListingProps = {
   history: [];
@@ -18,16 +17,19 @@ type JobListingProps = {
     title: string;
     created: string;
   };
-  tagStyles: { strong: { fontWeight: 'bold'}}
+  tagStyles: { strong: { fontWeight: 'bold' } };
 };
 
 const JobListing = (props: JobListingProps) => {
   const listing = props.listing;
-  const html = listing['description'];
+  const filteredTitle = listing['title'].replace(/<strong\s*>/g, '').replace(/<\/?strong\s*>/g, '');
+  const filteredDescription = listing['description']
+    .replace(/<strong\s*>/g, '')
+    .replace(/<\/?strong\s*>/g, '');
   return (
     <View style={styles.listingContainer}>
       <View style={styles.listingLine}>
-        <Text style={styles.bold}>{listing['title']}</Text>
+        <Text style={styles.bold}>{filteredTitle}</Text>
       </View>
       <View style={styles.listingLine}>
         <Text style={styles.bold}>Company </Text>
@@ -42,9 +44,7 @@ const JobListing = (props: JobListingProps) => {
         <Text>{listing['created']}</Text>
       </View>
       <View style={styles.listingLine}>
-        <Text>
-          {listing['description']}
-        </Text>
+        <Text>{filteredDescription}</Text>
       </View>
     </View>
   );
