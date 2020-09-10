@@ -123,58 +123,56 @@ const SearchContainer = (props: SearchContainerProps) => {
         .catch((error: string) => console.log('error in fetch', error));
     }
   };
- 
 
+  // const uniqueKey = uuid();
   return (
     <View style={styled.container}>
-      <ScrollView>
-        <SafeAreaView>
-          <View style={styles.container}>
-            <View>
-              <TextInput
-                style={styles.input}
-                underlineColorAndroid="transparent"
-                placeholder="Enter Your Location"
-                placeholderTextColor="#9a73ef"
-                value={location}
-                onChangeText={handleLocationInput}
-              />
-            </View>
-            <TouchableOpacity style={styles.addButton} onPress={handleLocationSubmit}>
-              <Icon name="add" />
-            </TouchableOpacity>
-          </View>
-          <View style={styles.container}>
+      <SafeAreaView>
+        <View style={styles.container}>
+          <View>
             <TextInput
               style={styles.input}
               underlineColorAndroid="transparent"
-              placeholder="Enter a Tech Stack"
+              placeholder="Enter Your Location"
               placeholderTextColor="#9a73ef"
-              autoCapitalize="none"
-              value={currentTech}
-              onChangeText={handleTechChange}
+              value={location}
+              onChangeText={handleLocationInput}
             />
-
-            <TouchableOpacity style={styles.addButton} onPress={handleTechStack}>
-              <Icon name="add" />
-            </TouchableOpacity>
           </View>
-          <View style={styles.listContainer}>
-            {tech.map((techItem) => (
-              <View style={styles.techListItem}>
-                <Text style={{ color: 'white' }} onPress={() => handleDeleteTech(techItem)}>
-                  {techItem} x
-                </Text>
-              </View>
-            ))}
-          </View>
-          <Text style={styles.header}>Search Results</Text>
-          <FlatList
-            data={queriedListings}
-            renderItem={(listing) => <JobListing listing={listing.item} />}
+          <TouchableOpacity style={styles.addButton} onPress={handleLocationSubmit}>
+            <Icon name="add" />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.container}>
+          <TextInput
+            style={styles.input}
+            underlineColorAndroid="transparent"
+            placeholder="Enter a Tech Stack"
+            placeholderTextColor="#9a73ef"
+            autoCapitalize="none"
+            value={currentTech}
+            onChangeText={handleTechChange}
           />
-        </SafeAreaView>
-      </ScrollView>
+
+          <TouchableOpacity style={styles.addButton} onPress={handleTechStack}>
+            <Icon name="add" />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.listContainer}>
+          {tech.map((techItem) => (
+            <View style={styles.techListItem} key={tech.indexOf(techItem)}>
+              <Text style={{ color: 'white' }} onPress={() => handleDeleteTech(techItem)}>
+                {techItem} x
+              </Text>
+            </View>
+          ))}
+        </View>
+        <Text style={styles.header}>Search Results</Text>
+        <FlatList
+          data={queriedListings}
+          renderItem={(listing) => <JobListing listing={listing.item} />}
+        />
+      </SafeAreaView>
     </View>
   );
 };
