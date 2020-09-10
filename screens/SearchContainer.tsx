@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import uuid from 'uuid4';
 import {
   View,
   Text,
@@ -9,16 +10,17 @@ import {
   SafeAreaView,
 } from 'react-native';
 import { Icon, Row } from 'native-base';
-import { initialWindowMetrics } from 'react-native-safe-area-context';
+require('dotenv').config();
+
 
 type SearchContainerProps = {
   history: [];
-  onPress: (event: GestureResponderEvent) => void;
 };
 
 type state = {
-  tech: [];
+  tech: string[];
   currentTech: string;
+  onPress: (event: GestureResponderEvent) => void;
 };
 
 const SearchContainer = (props: SearchContainerProps) => {
@@ -27,22 +29,37 @@ const SearchContainer = (props: SearchContainerProps) => {
   const [currentTech, updateCurrentTech] = useState('');
   const [tech, addTech] = useState([]);
 
+
   const handleChange = (text: any) => {
     updateCurrentTech(text);
   };
 
+  const fetchListing = () => {
+    console.log('listing')
+    console.log(process.env.APP_ID);
+    // fetch()
+  }
+
   const handleTechStack = () => {
-    let initial: any = [...tech, currentTech];
-    addTech(initial);
-    updateCurrentTech('');
+    if (currentTech && !tech.includes(currentTech)) {
+      let initial: any = [...tech, currentTech];
+      addTech(initial);
+      updateCurrentTech('');
+      // fetch request
+      fetchListing();
+    }
   };
-  const handleDeleteTech = (e: any) => {
-    const idx = e.target.key;
+  const handleDeleteTech = (techItem: any) => {
+    console.log('e', techItem)
+    const idx = tech.indexOf(techItem);
+    console.log(tech)
     console.log(idx);
     if (idx > -1) {
       tech.splice(idx, 1);
     }
+    handleTechStack();
   };
+
 
   return (
     <View style={styled.container}>
@@ -67,12 +84,14 @@ const SearchContainer = (props: SearchContainerProps) => {
         </View>
         <View style={styles.listContainer}>
           {tech.map((techItem) => (
-            <View style={styles.techListItem}>
+            <View 
+              style={styles.techListItem} 
+              key={techItem+tech.indexOf(techItem)}
+            >
               <Text style={{ color: 'white' }}> {techItem} </Text>
               <Text
-                key={tech.indexOf(techItem)}
                 style={styles.deleteTechItem}
-                onPress={handleDeleteTech}
+                onPress={() => {handleDeleteTech(techItem)}}
               >
                 x
               </Text>
