@@ -1,69 +1,85 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
   TextInput,
   StyleSheet,
-} from "react-native";
-import { Icon } from "native-base";
+  GestureResponderEvent,
+  SafeAreaView,
+} from 'react-native';
+import { Icon, Row } from 'native-base';
+import { initialWindowMetrics } from 'react-native-safe-area-context';
 
 type SearchContainerProps = {
-  history: []
-  onPress: void
+  history: [];
+  onPress: (event: GestureResponderEvent) => void;
 };
 
-type State = {
-  tech: [],
-  currentTech: string
+type state = {
+  tech: [];
+  currentTech: string;
 };
 
 const SearchContainer = (props: SearchContainerProps) => {
-
   const { history } = props;
-  
+
+  const [currentTech, updateCurrentTech] = useState('');
   const [tech, addTech] = useState([]);
-  const [currentTech, updateCurrentTech] = useState("");
+
+  const handleChange = (text: any) => {
+    updateCurrentTech(text);
+  };
 
   const handleTechStack = () => {
     let initial: any = [...tech, currentTech];
     addTech(initial);
     updateCurrentTech('');
   };
-
-  const handleChange = (text: any) => {
-    updateCurrentTech(text);
+  const handleDeleteTech = (e: any) => {
+    const idx = e.target.key;
+    console.log(idx);
+    if (idx > -1) {
+      tech.splice(idx, 1);
+    }
   };
 
   return (
     <View style={styled.container}>
-      <View style={styles.container}>
-        <TextInput
-          style={styles.input}
-          underlineColorAndroid="transparent"
-          placeholder="Enter a Tech Stack"
-          placeholderTextColor="#9a73ef"
-          autoCapitalize="none"
-          value={currentTech}
-          onChangeText={handleChange}
-        />
+      <SafeAreaView>
+        <View style={styles.title}>
+          <Text>Add Your Tech</Text>
+        </View>
+        <View style={styles.container}>
+          <TextInput
+            style={styles.input}
+            underlineColorAndroid="transparent"
+            placeholder="Enter a Tech Stack"
+            placeholderTextColor="#9a73ef"
+            autoCapitalize="none"
+            value={currentTech}
+            onChangeText={handleChange}
+          />
 
-        <TouchableOpacity
-          style={styles.addButton}
-          onPress={handleTechStack}
-        >
-          {/* <Text style={styles.addText}>+</Text> */}
-          <Icon name="add" />
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.locationButton}
-          onPress={() => history.push("/jobpage")} //insert if conditional functionality later to see if credentials correct then route to jobs else alert message
-          >
-          <Text style={styles.locationText}> Location </Text>
-        </TouchableOpacity>
-      </View>
-          <Text style={styles.container}>{tech}</Text>
+          <TouchableOpacity style={styles.addButton} onPress={handleTechStack}>
+            <Icon name="add" />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.listContainer}>
+          {tech.map((techItem) => (
+            <View style={styles.techListItem}>
+              <Text style={{ color: 'white' }}> {techItem} </Text>
+              <Text
+                key={tech.indexOf(techItem)}
+                style={styles.deleteTechItem}
+                onPress={handleDeleteTech}
+              >
+                x
+              </Text>
+            </View>
+          ))}
+        </View>
+      </SafeAreaView>
     </View>
   );
 };
@@ -73,19 +89,25 @@ export default SearchContainer;
 const styles = StyleSheet.create({
   container: {
     paddingTop: 15,
-    flexDirection: "row",
+    flexDirection: 'row',
+    margin: 20,
+  },
+  title: {
+    fontSize: 20,
+    marginTop: 30,
+    alignSelf: 'center',
   },
   input: {
-    margin: 15,
+    margin: 10,
     height: 25,
-    borderColor: "#7a42f4",
+    borderColor: '#7a42f4',
     borderWidth: 1,
-    width: 200,
-    textAlign: "center",
-    color: "black",
+    width: 300,
+    textAlign: 'center',
+    color: 'black',
   },
   locationButton: {
-    backgroundColor: "#7a42f4",
+    backgroundColor: '#7a42f4',
     margin: 15,
     height: 25,
     marginBottom: 5,
@@ -93,29 +115,48 @@ const styles = StyleSheet.create({
     marginLeft: 15,
   },
   locationText: {
-    color: "white",
-    textAlign: "center",
-    textAlignVertical: "center",
+    color: 'white',
+    textAlign: 'center',
+    textAlignVertical: 'center',
     marginTop: 3,
   },
   addText: {
-    color: "white",
-    textAlign: "center",
-    textAlignVertical: "center",
+    color: 'white',
+    textAlign: 'center',
+    textAlignVertical: 'center',
     marginTop: 15,
   },
   addButton: {
-    marginTop: 10,
+    marginTop: 5,
     marginLeft: 0,
+    justifyContent: 'center',
+  },
+  listContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    flexGrow: 0,
+    marginRight: 30,
+    marginLeft: 30,
+  },
+  techListItem: {
+    backgroundColor: '#7a42f4',
+    borderRadius: 15,
+    marginRight: 5,
+    marginBottom: 5,
+    padding: 5,
+    flexDirection: 'row',
+  },
+  deleteTechItem: {
+    marginRight: 5,
+    marginLeft: 5,
+    color: 'white',
+    fontWeight: 'bold',
   },
 });
 
 const styled = StyleSheet.create({
   container: {
     flex: 1,
-    // alignItems: "center",
-    // justifyContent: "center",
-    backgroundColor: "#7fffd4",
-    // flexDirection: "row",
+    backgroundColor: '#7fffd4',
   },
 });
