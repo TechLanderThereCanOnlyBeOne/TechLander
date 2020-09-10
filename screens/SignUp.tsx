@@ -9,17 +9,18 @@ import {
 
 const SignUp = ({ history }) => {
 	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
+	const [password1, setPassword] = useState("");
+	const [password2, setPassword2] = useState("");
 	const handleEmail = (text: string) => {
 		setEmail(text);
 	};
 	const handlePassword = (text: string) => {
 		setPassword(text);
 	};
-	const login = (email: string, pass: string) => {
-		alert("email: " + email + " password: " + pass);
+	const handlePassword2 = (text: string) => {
+		if (password1 === text) setPassword2(text);
 	};
-	const signUpBody = { username: email, password };
+	const signUpBody = { username: email, password: password2 };
 	return (
 		<View style={styled.container}>
 			<Text style={styled.title}>Registration</Text>
@@ -27,7 +28,8 @@ const SignUp = ({ history }) => {
 				<TextInput
 					style={styles.input}
 					underlineColorAndroid="transparent"
-					placeholder="Enter in your email address"
+					keyboardType="email-address"
+					placeholder="Email Address or Username"
 					placeholderTextColor="#9a73ef"
 					autoCapitalize="none"
 					onChangeText={handleEmail}
@@ -36,6 +38,7 @@ const SignUp = ({ history }) => {
 				<TextInput
 					style={styles.input}
 					underlineColorAndroid="transparent"
+					secureTextEntry
 					placeholder="Enter in your password"
 					placeholderTextColor="#9a73ef"
 					autoCapitalize="none"
@@ -45,24 +48,28 @@ const SignUp = ({ history }) => {
 				<TextInput
 					style={styles.input}
 					underlineColorAndroid="transparent"
+					secureTextEntry
 					placeholder="Confirm your password"
 					placeholderTextColor="#9a73ef"
 					autoCapitalize="none"
-					onChangeText={handlePassword}
+					onChangeText={handlePassword2}
 				/>
 
 				<TouchableOpacity
 					style={styles.submitButton}
 					onPress={() => {
-						fetch("http://10.0.1.22:19000/signUp", {
-							method: "POST",
-							headers: { "Content-Type": "application/json" },
-							body: JSON.stringify(signUpBody),
-						})
-							.then((response) => response.text())
-							.then((data) => console.log(data))
-							.catch((err) => console.log(err));
-						history.push("/");
+						if (password2) {
+							fetch("http://192.168.1.5:19000/signUp", {
+								method: "POST",
+								headers: { "Content-Type": "application/json" },
+								body: JSON.stringify(signUpBody),
+							})
+								.then((response) => response.text())
+								.then((data) => {
+									if (data) history.push("/");
+								})
+								.catch((err) => console.log(err));
+						} else alert("Passwords don't match");
 					}} //insert functionality to store create account later
 				>
 					<Text style={styles.submitButtonText}>Create Account</Text>
