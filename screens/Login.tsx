@@ -6,6 +6,7 @@ import {
 	TextInput,
 	StyleSheet,
 } from "react-native";
+// import RNFetchBlob from "rn-fetch-blob";
 
 const Login = ({ history }) => {
 	const [email, setEmail] = useState("");
@@ -22,7 +23,7 @@ const Login = ({ history }) => {
 
 	return (
 		<View style={styled.container}>
-			<Text style={styled.title}>Techander</Text>
+			<Text style={styled.title}>TechLander</Text>
 			<View style={styles.container}>
 				<TextInput
 					style={styles.input}
@@ -45,10 +46,11 @@ const Login = ({ history }) => {
 				<TouchableOpacity
 					style={styles.submitButton}
 					onPress={() =>
-						fetch("/log")
+						// console.log("hy")
+						fetch("http://192.168.1.5:19000/logy")
 							.then((response) => response.json())
-							.then((data) => alert("hi"))
-							.catch((err) => alert(err))
+							.then((data) => console.log(data))
+							.catch((err) => console.log(err))
 					} //insert if conditional functionality later to see if credentials correct then route to jobs else alert message
 				>
 					<Text style={styles.submitButtonText}> Login </Text>

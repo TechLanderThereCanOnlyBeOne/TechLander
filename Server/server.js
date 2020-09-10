@@ -4,11 +4,13 @@ const app = express();
 const cookie = require("cookie-parser");
 
 app.use(express.json());
-app.use(express.urlencoded());
-app.use(cookieParser());
+// app.use(express.urlencoded());
+// app.use(cookieParser());
 
-app.get("/log", (req, res) => {
-	res.send("yo");
+app.get("/logy", (req, res) => {
+	// res._bodyInit.freedom = "yo baby is this working????";
+	// console.log(res);
+	res.status(405).send("helyyodjc aubwehfbwerkhbff");
 });
 
 app.use("*", (req, res) => {
@@ -18,3 +20,5 @@ app.use("*", (req, res) => {
 app.use((err, req, res, next) => {
 	console.log("err", err);
 });
+
+app.listen(19000, () => console.log("i am listening"));
