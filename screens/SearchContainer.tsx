@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import JobListing from '../components/JobListing';
-import useJobQuery from '../hooks/useJobQuery';
 import {
   View,
   Text,
@@ -12,18 +11,18 @@ import {
   FlatList,
 } from 'react-native';
 import { Icon, Row } from 'native-base';
+import { APP_ID, APP_KEY } from '@env';
+
 import { initialWindowMetrics } from 'react-native-safe-area-context';
-import { Header } from 'react-native/Libraries/NewAppScreen';
 import { ScrollView } from 'react-native-gesture-handler';
 // import { uuid } from 'uuidv4';
 
 type SearchContainerProps = {
   history: [];
-  onPress: (event: GestureResponderEvent) => void;
 };
 
 type state = {
-  tech: [];
+  tech: string[];
   currentTech: string;
   location: string;
   addQuery: string;
@@ -50,54 +49,32 @@ const SearchContainer = (props: SearchContainerProps) => {
 
   // queried listings is returned as as result array
   // Dummy data
-  const [queriedListings, setQueriedJobListings] = useState([
-    {
-      company: { display_name: 'Cognizant' },
-      location: {
-        display_name: 'New York City, New York',
-        area: ['US', 'New York', 'New York City'],
-      },
-      redirect_url:
-        'https://www.adzuna.com/land/ad/1652179176?se=fhjv5XLz6hGQK1pXjRGthg&utm_medium=api&utm_source=8340be95&v=1CFAC652FCA18D09250F42603D8D3728574F6C58',
-      description:
-        '...  and Marketing Technology domain, including: \u2022 Understand business requirements and translate them into technical requirements \u2022 Develop new user-facing features using <strong>React</strong>.js, Riot and <strong>Redux</strong> ...  end teams. Key Qualifications: \u2022 Deep understanding of <strong>React</strong> Architecture, Hooks. Webpack, , SASS, LESS; \u2022 Experience in development RWD and SPA with ReactJS, <strong>Redux</strong>, Routers, jQuery ...',
-      title: 'UI Developer \u2013 <strong>React</strong>',
-      created: '2020-08-20T10:18:33Z',
-    },
-    {
-      company: { display_name: 'Cognizant' },
-      location: {
-        display_name: 'New York City, New York',
-        area: ['US', 'New York', 'New York City'],
-      },
-      redirect_url:
-        'https://www.adzuna.com/land/ad/1652179176?se=fhjv5XLz6hGQK1pXjRGthg&utm_medium=api&utm_source=8340be95&v=1CFAC652FCA18D09250F42603D8D3728574F6C58',
-      description:
-        '...  and Marketing Technology domain, including: \u2022 Understand business requirements and translate them into technical requirements \u2022 Develop new user-facing features using <strong>React</strong>.js, Riot and <strong>Redux</strong> ...  end teams. Key Qualifications: \u2022 Deep understanding of <strong>React</strong> Architecture, Hooks. Webpack, , SASS, LESS; \u2022 Experience in development RWD and SPA with ReactJS, <strong>Redux</strong>, Routers, jQuery ...',
-      title: 'UI Developer \u2013 <strong>React</strong>',
-      created: '2020-08-20T10:18:33Z',
-    },
-    {
-      title: 'Sr. <strong>React</strong>/UI Developer or Architect',
-      created: '2020-09-02T10:22:01Z',
-      location: { display_name: 'Jersey City, Hudson County' },
-      company: { display_name: 'HR Pundits', area: ['US', 'New York', 'New York City'] },
-      description:
-        '. Strong in <strong>React</strong> Framework, <strong>Redux</strong>. UIFront end design ...',
-      redirect_url:
-        'https://www.adzuna.com/land/ad/1683644527?se=fhjv5XLz6hGQK1pXjRGthg&utm_medium=api&utm_source=8340be95&v=35AEBE994626059F79C5FAB82A54103CDE1DB011',
-    },
-  ]);
+  const [queriedListings, setQueriedJobListings] = useState([]);
+
+  // fetch job listings when queries are added
+  useEffect(() => {
+    fetchListing();
+    console.log('useeffect fired');
+  }, [addQuery]);
+  // fetch job listings when queries are subtracted
+  useEffect(() => {
+    fetchListing();
+    console.log('useeffect fired');
+  }, [subtractQuery]);
 
   const handleTechChange = (text: any) => {
     updateCurrentTech(text);
   };
 
-  const handleLocationInput = (text: any) => {
+  const handleLocationInput = (text: string) => {
     setLocation(text);
   };
+
   const handleLocationSubmit = () => {
-    console.log(location);
+    let modText = location.split(' ').join('%20');
+    modText = modText.split(',').join('%2C');
+    console.log(modText);
+    setLocation(modText);
     // send location as query
   };
 
@@ -109,7 +86,7 @@ const SearchContainer = (props: SearchContainerProps) => {
     }
     // add the most recent item into search query
     let newTechStack = tech.concat(currentTech);
-    const addQueryString = newTechStack.join(' ');
+    const addQueryString = newTechStack.join('%20');
     // optional set state
     setAddQuery(addQueryString);
     // send query
@@ -123,27 +100,46 @@ const SearchContainer = (props: SearchContainerProps) => {
     }
     console.log(tech);
     handleTechStack();
-    const subtractQueryString = tech.join(' ');
+    const subtractQueryString = tech.join('%20');
     // optional set state
     setSubtractQuery(subtractQueryString);
     // send query
   };
+
+  // fetch job listings with adzuna API
+  // need to add APP_ID & APP_KEY to .env
+  const fetchListing = () => {
+    if (addQuery.length > 0 && location.length > 0) {
+      let queryString = `http://api.adzuna.com/v1/api/jobs/us/search/1?app_id=${APP_ID}&app_key=${APP_KEY}&results_per_page=10&what=${addQuery}&where=${location}&distance=30`;
+      console.log('queryString', queryString);
+      fetch(queryString)
+        .then((res: any) => res.json())
+        .then((data: any) => {
+          console.log('jobs: ', data);
+          let jobResults: any = [...data.results];
+          console.log('results');
+          setQueriedJobListings(jobResults);
+        })
+        .catch((error: string) => console.log('error in fetch', error));
+    }
+  };
+ 
 
   return (
     <View style={styled.container}>
       <ScrollView>
         <SafeAreaView>
           <View style={styles.container}>
-            <TextInput
-              style={styles.input}
-              underlineColorAndroid="transparent"
-              placeholder="Enter Your Location"
-              placeholderTextColor="#9a73ef"
-              autoCapitalize="none"
-              value={location}
-              onChangeText={handleLocationInput}
-            />
-
+            <View>
+              <TextInput
+                style={styles.input}
+                underlineColorAndroid="transparent"
+                placeholder="Enter Your Location"
+                placeholderTextColor="#9a73ef"
+                value={location}
+                onChangeText={handleLocationInput}
+              />
+            </View>
             <TouchableOpacity style={styles.addButton} onPress={handleLocationSubmit}>
               <Icon name="add" />
             </TouchableOpacity>
@@ -179,7 +175,6 @@ const SearchContainer = (props: SearchContainerProps) => {
           />
         </SafeAreaView>
       </ScrollView>
-      
     </View>
   );
 };
@@ -188,9 +183,8 @@ export default SearchContainer;
 
 const styles = StyleSheet.create({
   container: {
-    paddingTop: 15,
     flexDirection: 'row',
-    margin: 20,
+    margin: 10,
   },
   title: {
     fontSize: 20,
@@ -201,12 +195,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
     textTransform: 'uppercase',
-    marginBottom: 20,
+    marginBottom: 10,
     marginLeft: 30,
   },
   input: {
-    margin: 10,
-    height: 25,
+    marginLeft: 20,
+    marginRight: 20,
+    height: 35,
     borderColor: '#7a42f4',
     borderWidth: 1,
     width: 300,
@@ -244,6 +239,8 @@ const styles = StyleSheet.create({
     flexGrow: 0,
     marginRight: 30,
     marginLeft: 30,
+    marginBottom: 30,
+    marginTop: 20,
   },
   resultsContainer: {
     flexDirection: 'column',
@@ -270,5 +267,6 @@ const styled = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#7fffd4',
+    paddingTop: 20,
   },
 });

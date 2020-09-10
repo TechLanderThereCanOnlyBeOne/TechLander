@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { Icon, Row } from 'native-base';
+import HTML from 'react-native-render-html';
 
 type JobListingProps = {
   history: [];
@@ -17,17 +18,34 @@ type JobListingProps = {
     title: string;
     created: string;
   };
+  tagStyles: { strong: { fontWeight: 'bold'}}
 };
 
 const JobListing = (props: JobListingProps) => {
   const listing = props.listing;
-  console.log('listing', listing)
+  const html = listing['description'];
   return (
     <View style={styles.listingContainer}>
-      <Text>Tital {listing.title}</Text>
-      <Text>Tital {listing.created}</Text>
-      <Text>Location {listing.location.display_name}</Text>
-      <Text>Decription {listing.description}</Text>
+      <View style={styles.listingLine}>
+        <Text style={styles.bold}>{listing['title']}</Text>
+      </View>
+      <View style={styles.listingLine}>
+        <Text style={styles.bold}>Company </Text>
+        <Text>{listing['company']['display_name']}</Text>
+      </View>
+      <View style={styles.listingLine}>
+        <Text style={styles.bold}>Location </Text>
+        <Text>{listing['location']['display_name']}</Text>
+      </View>
+      <View style={styles.listingLine}>
+        <Text style={styles.bold}>Posted </Text>
+        <Text>{listing['created']}</Text>
+      </View>
+      <View style={styles.listingLine}>
+        <Text>
+          {listing['description']}
+        </Text>
+      </View>
     </View>
   );
 };
@@ -45,9 +63,9 @@ const styles = StyleSheet.create({
     marginTop: 20,
     paddingTop: 20,
     paddingLeft: 30,
-    paddingRight: 30, 
+    paddingRight: 30,
     borderTopColor: '#7a42f4',
-    borderTopWidth: 1
+    borderTopWidth: 1,
   },
   resultsContainer: {
     flexDirection: 'column',
@@ -61,7 +79,13 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     padding: 5,
     flexDirection: 'row',
-  }
+  },
+  bold: {
+    fontWeight: 'bold',
+  },
+  listingLine: {
+    flexDirection: 'row',
+  },
 });
 
 const styled = StyleSheet.create({
