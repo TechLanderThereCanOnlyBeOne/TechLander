@@ -5,13 +5,14 @@ const userController = {};
 
 userController.login = (req, res, next) => {
 	if (req.body.username && req.body.password) {
-		const query = `SELECT password FROM users WHERE username = '${req.body.username}';`;
+		const query = `SELECT password, jobs FROM users WHERE username = '${req.body.username}';`;
 		db.query(query)
 			.then((data) => {
 				bcrypt
 					.compare(req.body.password, data.rows[0].password)
 					.then((match) => {
 						res.locals.check = match;
+						res.locals.jobs = data.rows[0].jobs;
 						next();
 					})
 					.catch((err) => next(err));
@@ -39,6 +40,12 @@ userController.signUp = (req, res, next) => {
 			})
 			.catch((err) => console.log(err.message));
 	}
+};
+
+userController.addJobs = (req, res, next) => {
+	// req.body.jobs array of jobs
+	const query = ``;
+	db.query(query).then((data) => console.log(data));
 };
 
 module.exports = userController;

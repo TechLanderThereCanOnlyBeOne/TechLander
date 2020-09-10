@@ -27,7 +27,8 @@ const Login = ({ history }) => {
 				<TextInput
 					style={styles.input}
 					underlineColorAndroid="transparent"
-					placeholder="Email"
+					keyboardType="email-address"
+					placeholder="Email/Username"
 					placeholderTextColor="#9a73ef"
 					autoCapitalize="none"
 					onChangeText={handleEmail}
@@ -36,6 +37,7 @@ const Login = ({ history }) => {
 				<TextInput
 					style={styles.input}
 					underlineColorAndroid="transparent"
+					secureTextEntry
 					placeholder="Password"
 					placeholderTextColor="#9a73ef"
 					autoCapitalize="none"
@@ -45,16 +47,18 @@ const Login = ({ history }) => {
 				<TouchableOpacity
 					style={styles.submitButton}
 					onPress={() =>
-						// console.log("hy")
 						fetch("http://192.168.1.5:19000/login", {
 							method: "POST",
 							headers: { "Content-Type": "application/json" },
 							body: JSON.stringify(loginBody),
 						})
 							.then((response) => response.text())
+							.then((text) => JSON.parse(text))
 							.then((data) => {
-								if (data === "true") history.push("/jobpage");
-								else {
+								if (data.check) {
+									history.push("/jobpage");
+									// data.jobs is the the array of jobs stored in db
+								} else {
 									alert("Incorrect password or username");
 								}
 							})
@@ -121,6 +125,6 @@ const styled = StyleSheet.create({
 	title: {
 		fontSize: 20,
 		fontWeight: "bold",
-		color: "black",
+		color: "gray",
 	},
 });
