@@ -46,13 +46,18 @@ const Login = ({ history }) => {
 					style={styles.submitButton}
 					onPress={() =>
 						// console.log("hy")
-						fetch("http://(Put in your own private IP here):19000/login", {
+						fetch("http://192.168.1.5:19000/login", {
 							method: "POST",
 							headers: { "Content-Type": "application/json" },
 							body: JSON.stringify(loginBody),
 						})
 							.then((response) => response.text())
-							.then((data) => console.log(data))
+							.then((data) => {
+								if (data === "true") history.push("/jobpage");
+								else {
+									alert("Incorrect password or username");
+								}
+							})
 							.catch((err) => console.log(err))
 					} //insert if conditional functionality later to see if credentials correct then route to jobs else alert message
 				>

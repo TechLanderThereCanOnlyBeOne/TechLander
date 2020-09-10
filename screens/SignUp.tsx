@@ -54,15 +54,16 @@ const SignUp = ({ history }) => {
 				<TouchableOpacity
 					style={styles.submitButton}
 					onPress={() => {
-						fetch("http://(Put in your own private IP here):19000/signUp", {
+						fetch("http://192.168.1.5:19000/signUp", {
 							method: "POST",
 							headers: { "Content-Type": "application/json" },
 							body: JSON.stringify(signUpBody),
 						})
 							.then((response) => response.text())
-							.then((data) => console.log(data))
+							.then((data) => {
+								if (data) history.push("/");
+							})
 							.catch((err) => console.log(err));
-						history.push("/");
 					}} //insert functionality to store create account later
 				>
 					<Text style={styles.submitButtonText}>Create Account</Text>
