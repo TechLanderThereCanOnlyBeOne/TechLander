@@ -1,4 +1,4 @@
-import { useState } from "react";\
+import { useState } from "react";
 // hook for element from result array
 export default response => {
   const [title, setTitle] = useState(response.title);

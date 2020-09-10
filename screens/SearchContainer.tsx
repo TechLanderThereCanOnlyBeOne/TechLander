@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import JobListing from '../components/JobListing';
+import useJobQuery from '../hooks/useJobQuery';
 import {
   View,
   Text,
@@ -8,10 +9,11 @@ import {
   StyleSheet,
   GestureResponderEvent,
   SafeAreaView,
-  FlatList
+  FlatList,
 } from 'react-native';
 import { Icon, Row } from 'native-base';
 import { initialWindowMetrics } from 'react-native-safe-area-context';
+import { Header } from 'react-native/Libraries/NewAppScreen';
 // import { uuid } from 'uuidv4';
 
 type SearchContainerProps = {
@@ -26,6 +28,14 @@ type state = {
   addQuery: string;
   subtractQuery: string;
   queriedListings: [{}];
+  listing: {
+    company: { display_name: string };
+    location: { display_name: string; area: string[] };
+    redirect_url: string;
+    description: string;
+    title: string;
+    created: string;
+  };
 };
 
 const SearchContainer = (props: SearchContainerProps) => {
@@ -40,87 +50,30 @@ const SearchContainer = (props: SearchContainerProps) => {
   // queried listings is returned as as result array
   // Dummy data
   const [queriedListings, setQueriedJobListings] = useState([
-      {
-        company: { display_name: 'Cognizant' },
-        location: {
-          display_name: 'New York City, New York',
-          area: ["US","New York","New York City"]
-        },
-        redirect_url:
-          'https://www.adzuna.com/land/ad/1652179176?se=fhjv5XLz6hGQK1pXjRGthg&utm_medium=api&utm_source=8340be95&v=1CFAC652FCA18D09250F42603D8D3728574F6C58',
-        description:
-          '...  and Marketing Technology domain, including: \u2022 Understand business requirements and translate them into technical requirements \u2022 Develop new user-facing features using <strong>React</strong>.js, Riot and <strong>Redux</strong> ...  end teams. Key Qualifications: \u2022 Deep understanding of <strong>React</strong> Architecture, Hooks. Webpack, , SASS, LESS; \u2022 Experience in development RWD and SPA with ReactJS, <strong>Redux</strong>, Routers, jQuery ...',
-        title: 'UI Developer \u2013 <strong>React</strong>',
-        created: '2020-08-20T10:18:33Z',
+    {
+      company: { display_name: 'Cognizant' },
+      location: {
+        display_name: 'New York City, New York',
+        area: ['US', 'New York', 'New York City'],
       },
-      {
-        title: 'Sr. <strong>React</strong>/UI Developer or Architect',
-        created: '2020-09-02T10:22:01Z',
-        location: {
-          display_name: 'Jersey City, Hudson County',
-        },
-        company: { display_name: 'HR Pundits', area: ["US","New York","New York City"]},
-        description:
-          '. Strong in <strong>React</strong> Framework, <strong>Redux</strong>. UIFront end design ...',
-        redirect_url:
-          'https://www.adzuna.com/land/ad/1683644527?se=fhjv5XLz6hGQK1pXjRGthg&utm_medium=api&utm_source=8340be95&v=35AEBE994626059F79C5FAB82A54103CDE1DB011',
-      },
-      {
-        location: {
-          display_name: 'Grand Central, Manhattan',
-          area: ['US', 'New York', 'New York City', 'Manhattan', 'Grand Central'],
-        },
-        company: { display_name: 'Skiltrek LLC' },
-        redirect_url:
-          'https://www.adzuna.com/land/ad/1669036288?se=fhjv5XLz6hGQK1pXjRGthg&utm_medium=api&utm_source=8340be95&v=2065A59E97D92E2AA660CBB7F77D9BA72FCB44FC',
-        description:
-          '...  are the skill splits requested by the manager - 100 % means they need to be fully proficient. <strong>React</strong>.js <strong>Redux</strong> & Flux Knowledge of REST API GIT and Jenkins Knowledge PostgreSQL DB Node.js ... REQUIRED EXPERIENCE: 5-8 years of IT development/programming/coding professional work experience Sr <strong>React</strong> Node JS developer with Java micro service development experience Here ...',
-        title: '<strong>React</strong> NodeJS Developer',
-        created: '2020-08-27T15:56:10Z',
-      },
-      {
-        company: { display_name: 'Cognizant' },
-        location: {
-          display_name: 'New York City, New York',
-          area: ['US', 'New York', 'New York City'],
-        },
-        description:
-          '...  and Marketing Technology domain, including: \u2022 Understand business requirements and translate them into technical requirements \u2022 Develop new user-facing features using <strong>React</strong>.js, Riot and <strong>Redux</strong> ...  end teams. Key Qualifications: \u2022 Deep understanding of <strong>React</strong> Architecture, Hooks. Webpack, , SASS, LESS; \u2022 Experience in development RWD and SPA with ReactJS, <strong>Redux</strong>, Routers, jQuery ...',
-        redirect_url:
-          'https://www.adzuna.com/land/ad/1643960107?se=fhjv5XLz6hGQK1pXjRGthg&utm_medium=api&utm_source=8340be95&v=2055C39F73575F45A84BE2B053C9D436E08ED178',
-        title: 'UI Developer \u2013 <strong>React</strong>',
-        created: '2020-08-15T05:17:32Z',
-      },
-      {
-        company: {
-          display_name: 'JPMorgan Chase & Co',
-        },
-        location: {
-          display_name: 'Jersey City, Hudson County',
-          area: ['US', 'New Jersey', 'Hudson County', 'Jersey City'],
-        },
-        description:
-          '...  opportunities for process and tool improvements and drive those from concept to implementation Developing new user-facing features using <strong>React</strong>.js/<strong>Redux</strong>/D3 Building reusable components ...  manipulation and the JavaScript object model Thorough understanding of <strong>React</strong>.js and its core principles Experience with <strong>Redux</strong> <strong>React</strong>.js workflows Hands-on experience in creating responsive ...',
-        redirect_url:
-          'https://www.adzuna.com/land/ad/1681652090?se=fhjv5XLz6hGQK1pXjRGthg&utm_medium=api&utm_source=8340be95&v=BF91E6CF3CDBB6572335E151BAB13DFC082F40A7',
-        title: 'Full Stack Engineer (Java Microservices, <strong>React</strong> JS)',
-        created: '2020-09-01T04:25:29Z',
-      },
-      {
-        created: '2020-06-09T08:39:48Z',
-        title: 'Full Stack Engineer (Java Microservices, <strong>React</strong> JS)',
-        description:
-          '...  new user-facing features using <strong>React</strong>.js/<strong>Redux</strong>/D3 Building reusable components and front-end libraries for future use Come up with UI and UX strategies based on our target goals ...  delivery and team management Thorough understanding of <strong>React</strong>.js and its core principles Experience with <strong>Redux</strong> <strong>React</strong>.js workflows Experience with common front-end development tools ...',
-        redirect_url:
-          'https://www.adzuna.com/land/ad/1568273242?se=fhjv5XLz6hGQK1pXjRGthg&utm_medium=api&utm_source=8340be95&v=8FE8EA6EAF5817FF09FBAC24222DDC613DD44B82',
-        location: {
-          area: ['US', 'New Jersey', 'Hudson County', 'Jersey City'],
-          display_name: 'Jersey City, Hudson County',
-        },
-        company: { display_name: 'JPMorgan Chase' },
-      },
-    ]);
-
+      redirect_url:
+        'https://www.adzuna.com/land/ad/1652179176?se=fhjv5XLz6hGQK1pXjRGthg&utm_medium=api&utm_source=8340be95&v=1CFAC652FCA18D09250F42603D8D3728574F6C58',
+      description:
+        '...  and Marketing Technology domain, including: \u2022 Understand business requirements and translate them into technical requirements \u2022 Develop new user-facing features using <strong>React</strong>.js, Riot and <strong>Redux</strong> ...  end teams. Key Qualifications: \u2022 Deep understanding of <strong>React</strong> Architecture, Hooks. Webpack, , SASS, LESS; \u2022 Experience in development RWD and SPA with ReactJS, <strong>Redux</strong>, Routers, jQuery ...',
+      title: 'UI Developer \u2013 <strong>React</strong>',
+      created: '2020-08-20T10:18:33Z',
+    },
+    {
+      title: 'Sr. <strong>React</strong>/UI Developer or Architect',
+      created: '2020-09-02T10:22:01Z',
+      location: { display_name: 'Jersey City, Hudson County' },
+      company: { display_name: 'HR Pundits', area: ['US', 'New York', 'New York City'] },
+      description:
+        '. Strong in <strong>React</strong> Framework, <strong>Redux</strong>. UIFront end design ...',
+      redirect_url:
+        'https://www.adzuna.com/land/ad/1683644527?se=fhjv5XLz6hGQK1pXjRGthg&utm_medium=api&utm_source=8340be95&v=35AEBE994626059F79C5FAB82A54103CDE1DB011',
+    },
+  ]);
 
   const handleTechChange = (text: any) => {
     updateCurrentTech(text);
@@ -204,15 +157,11 @@ const SearchContainer = (props: SearchContainerProps) => {
             </View>
           ))}
         </View>
-        <Text>Search Results</Text>
+        <Text style={styles.header}>Search Results</Text>
         <FlatList
-        data={queriedListings}
-        renderItem={(listing) => (
-          <JobListing
-            listing={listing}
-          />
-        )}
-      />
+          data={queriedListings}
+          renderItem={(listing) => <JobListing listing={listing.item} />}
+        />
       </SafeAreaView>
     </View>
   );
@@ -230,6 +179,13 @@ const styles = StyleSheet.create({
     fontSize: 20,
     marginTop: 30,
     alignSelf: 'center',
+  },
+  header: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
+    marginBottom: 20,
+    marginLeft: 30,
   },
   input: {
     margin: 10,
