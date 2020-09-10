@@ -5,16 +5,13 @@ import {
   TouchableOpacity,
   TextInput,
   StyleSheet,
-  GestureResponderEvent,
 } from "react-native";
 import { Icon } from "native-base";
 
 type SearchContainerProps = {
   history: []
-  onPress: (event: GestureResponderEvent) => void
+  onPress: void
 };
-
-
 
 type State = {
   tech: [],
@@ -28,17 +25,13 @@ const SearchContainer = (props: SearchContainerProps) => {
   const [tech, addTech] = useState([]);
   const [currentTech, updateCurrentTech] = useState("");
 
-  const handleTechStack = (currentTech: string) => {
+  const handleTechStack = () => {
     let initial: any = [...tech, currentTech];
-    console.log('initial', initial);
-    console.log('currenttech', currentTech);
-    addTech(currentTech => initial);
-    console.log('tech', tech);
+    addTech(initial);
+    updateCurrentTech('');
   };
 
   const handleChange = (text: any) => {
-    // let initial: any = [...tech, text];
-    
     updateCurrentTech(text);
   };
 
@@ -69,8 +62,8 @@ const SearchContainer = (props: SearchContainerProps) => {
           >
           <Text style={styles.locationText}> Location </Text>
         </TouchableOpacity>
-          <Text style={styles.container}>{currentTech}</Text>
       </View>
+          <Text style={styles.container}>{tech}</Text>
     </View>
   );
 };
