@@ -27,7 +27,8 @@ const Login = ({ history }) => {
 				<TextInput
 					style={styles.input}
 					underlineColorAndroid="transparent"
-					placeholder="Email"
+					keyboardType="email-address"
+					placeholder="Email/Username"
 					placeholderTextColor="#9a73ef"
 					autoCapitalize="none"
 					onChangeText={handleEmail}
@@ -36,6 +37,7 @@ const Login = ({ history }) => {
 				<TextInput
 					style={styles.input}
 					underlineColorAndroid="transparent"
+					secureTextEntry
 					placeholder="Password"
 					placeholderTextColor="#9a73ef"
 					autoCapitalize="none"
@@ -45,14 +47,21 @@ const Login = ({ history }) => {
 				<TouchableOpacity
 					style={styles.submitButton}
 					onPress={() =>
-						// console.log("hy")
-						fetch("http://(Put in your own private IP here):19000/login", {
+						fetch("(INSERT IP HERE)/login", {
 							method: "POST",
 							headers: { "Content-Type": "application/json" },
 							body: JSON.stringify(loginBody),
 						})
 							.then((response) => response.text())
-							.then((data) => console.log(data))
+							.then((text) => JSON.parse(text))
+							.then((data) => {
+								if (data.check) {
+									history.push("/jobpage");
+									// data.jobs is the the array of jobs stored in db
+								} else {
+									alert("Incorrect password or username");
+								}
+							})
 							.catch((err) => console.log(err))
 					} //insert if conditional functionality later to see if credentials correct then route to jobs else alert message
 				>
@@ -116,6 +125,6 @@ const styled = StyleSheet.create({
 	title: {
 		fontSize: 20,
 		fontWeight: "bold",
-		color: "black",
+		color: "gray",
 	},
 });

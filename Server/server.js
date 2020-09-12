@@ -5,11 +5,12 @@ const userController = require("./controllers/userController");
 app.use(express.json());
 
 app.post("/login", userController.login, (req, res) => {
-	res.status(200).send("data we recieve from db");
+	const user = { check: res.locals.check, jobs: res.locals.jobs };
+	res.status(200).send(user);
 });
 
 app.post("/signUp", userController.signUp, (req, res) => {
-	res.status(200).send("data we recieve from db");
+	res.status(200).send(res.locals.check);
 });
 
 app.use("*", (req, res) => {
